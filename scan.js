@@ -39,8 +39,23 @@ function scanBluetooth(numScans, progressFunc) {
     });
 }
 
+function scanBluetoothTimer(numScansPerCheck, delayBetweenScans) {
+    var printProgress = (percentComplete) => console.log(`Scan frame ${percentComplete}% complete`);
+    var onError = (error) => console.error('An error occurred:', error);
+
+    console.log('Beginning Scan Timer');
+    scanBluetooth(numScansPerCheck, printProgress).then(function _scan(candidates) {
+        console.log('Scan frame complete');
+        candidates.forEach((candidate) => {
+            console.log(`Found: ${candidate.address} - ${candidate.name}`);
+        });
+        console.log();
+        setTimeout(() => scanBluetooth(numScansPerCheck, printProgress)
+                            .then(_scan, onError), delayBetweenScans);
+    }, onError);
+}
+
 function findChannelForAddress(address) {
-    console.log('Address:', address);
     return new Promise((resolve, reject) => {
         var serialPort = new btSerial.BluetoothSerialPort();
         serialPort.findSerialPortChannel(address, resolve, reject); // there is no error object passed to reject
@@ -55,6 +70,8 @@ process.stdin.setEncoding('utf8');
 process.stdin.on('data', (text) => {
     text = text && text.toLowerCase().trim();
     if (text === 'y' || text === 'yes') {
+        // scanBluetoothTimer(1, 5000);
+
         console.log('Starting scan...');
         scanBluetooth(5, (percentComplete) => {
             console.log(`Scanning ${percentComplete}% complete`);
