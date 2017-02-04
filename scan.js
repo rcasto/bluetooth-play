@@ -3,20 +3,32 @@ var btSerial = require('bluetooth-serial-port');
 /*
     Find Bluetooth candidates nearby and return them as a list
 */
-function scanBluetooth() {
+function scanBluetooth(numScans, progressFunc) {
+    var totalScans = numScans;
     return new Promise((resolve, reject) => {
         var serialPort = new btSerial.BluetoothSerialPort();
-        var candidates = [];
+        var candidates = {};
         // Setup scan processing event handlers
         serialPort.on('found', (address, name) => {
-            candidates.push({
-                address,
-                name
-            });
+            if (!candidates[address]) {
+                candidates[address] = {
+                    address,
+                    name
+                };
+            }
         });
-        serialPort.on('failure', (err) => reject(err));
+        serialPort.on('failure', reject);
         serialPort.on('finished', () => {
-            resolve(candidates);
+            numScans--;
+            if (numScans > 0) {
+                progressFunc && progressFunc(100 * (1 - (numScans / totalScans)));
+                serialPort.inquire();
+            } else {
+                let candidatesList = Object.keys(candidates).map((address) => {
+                    return candidates[address];
+                });
+                resolve(candidatesList);
+            }
         });
         // Start the scan
         serialPort.inquire();
@@ -27,7 +39,7 @@ function findChannelForAddress(address) {
     console.log('Address:', address);
     return new Promise((resolve, reject) => {
         var serialPort = new btSerial.BluetoothSerialPort();
-        serialPort.findSerialPortChannel(address, resolve, reject);
+        serialPort.findSerialPortChannel(address, resolve, reject); // there is no error object passed to reject
     });
 }
 
@@ -40,20 +52,17 @@ process.stdin.on('data', (text) => {
     text = text && text.toLowerCase().trim();
     if (text === 'y' || text === 'yes') {
         console.log('Starting scan...');
-        scanBluetooth().then((candidates) => {
+        scanBluetooth(5, (percentComplete) => {
+            console.log(`Scanning ${percentComplete}% complete`);
+        }).then((candidates) => {
             candidates.forEach((candidate) => {
+                console.log('Scanning complete');
                 console.log(`Found: ${candidate.address} - ${candidate.name}`);
             });
         })
         .catch((err) => console.error('Error here:', err))
         .then(() => {
-            // console.log(`Attempting to connect to candidate: ${candidate.address} - ${candidate.name}`);
-            findChannelForAddress('12:05:80:47:04:CD')
-                .then((channel) => {
-                    console.log(`Channel: ${channel}`);
-                })
-                .catch((err) => console.error(err))
-                .then(() => process.exit());
+            process.exit();
         }); // finally not supported it looks like
     } else {
         console.log('Goodbye.');
