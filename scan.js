@@ -5,6 +5,10 @@ var btSerial = require('bluetooth-serial-port');
 */
 function scanBluetooth(numScans, progressFunc) {
     var totalScans = numScans;
+    // Always runs at least 1 scan, or else why call it in the first place?
+    if (!numScans || numScans < 0) {
+        numScans = 1;
+    }
     return new Promise((resolve, reject) => {
         var serialPort = new btSerial.BluetoothSerialPort();
         var candidates = {};
@@ -30,7 +34,7 @@ function scanBluetooth(numScans, progressFunc) {
                 resolve(candidatesList);
             }
         });
-        // Start the scan
+        // Start the initial scan
         serialPort.inquire();
     });
 }
