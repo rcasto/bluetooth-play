@@ -59,8 +59,8 @@ process.stdin.on('data', (text) => {
         scanBluetooth(5, (percentComplete) => {
             console.log(`Scanning ${percentComplete}% complete`);
         }).then((candidates) => {
+            console.log('Scanning complete');
             candidates.forEach((candidate) => {
-                console.log('Scanning complete');
                 console.log(`Found: ${candidate.address} - ${candidate.name}`);
             });
         })
