@@ -4,8 +4,8 @@
   "description": "Playing around with Bluetooth communicaton",
   "main": "index.js",
   "scripts": {
-    "prestart": "babel scan-pi.js --presets es2015 --out-file scan-pi.compiled.js",
-    "start": "node scan-pi.compiled.js",
+    "prestart": "babel src --presets es2015 --out-dir dist",
+    "start": "node dist/scan-pi.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Richie Casto",
