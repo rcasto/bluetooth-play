@@ -1,6 +1,8 @@
+require("babel-polyfill");
+
 var bluetooth = require('./bluetooth');
 
-bluetooth.scanBluetoothTimer(1, 5000, (candidates) => {
+bluetooth.scanBluetoothTimer(1, 10000, (candidates) => {
     console.log('Scan frame complete');
     candidates.forEach((candidate) => {
         console.log(`Found: ${candidate.address} - ${candidate.name}`);
