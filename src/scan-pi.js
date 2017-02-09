@@ -19,6 +19,7 @@ bluetooth.scanBluetoothTimer(1, 10000, (candidates) => {
     if (candidates.length > 0) {
         output_voltage = rpio.HIGH;
     }
+    console.log('Writing voltage:', output_voltage);
     rpio.write(PIN_OUT, output_voltage);
 }, (percentComplete) => {
     console.log(`Scan frame ${percentComplete}% complete`);
