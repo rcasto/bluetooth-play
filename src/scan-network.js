@@ -22,7 +22,7 @@ function (report) {
     //             output_voltage = rpio.HIGH;
     //         }
     //     });
-    // rpio.write(PIN_OUT, output_voltage);
+    rpio.write(PIN_OUT, output_voltage);
     console.log();
 }, function (error) {
     console.error('Something went wrong:', error);
