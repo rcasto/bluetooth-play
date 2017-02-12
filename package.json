@@ -6,6 +6,7 @@
   "scripts": {
     "prestart": "babel src --presets es2015 --out-dir dist",
     "start": "node dist/scan-pi.js",
+    "clean": "rm -rf dist node_modules",
     "network": "npm run prestart && node dist/scan-network.js" 
   },
   "author": "Richie Casto",
