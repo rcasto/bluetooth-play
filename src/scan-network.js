@@ -14,14 +14,15 @@ network.scanTimer({
 10000, 
 function (report) {
     var output_voltage = rpio.LOW;
-    network.getAddresses(report)
-        .forEach(function (address) {
-            console.log(address.address, '-', address.vendor);
-            if (address.address === TARGET) {
-                output_voltage = rpio.HIGH;
-            }
-        });
-    rpio.write(PIN_OUT, output_voltage);
+    console.log('Scan complete');
+    // network.getAddresses(report)
+    //     .forEach(function (address) {
+    //         console.log(address.address, '-', address.vendor);
+    //         if (address.address === TARGET) {
+    //             output_voltage = rpio.HIGH;
+    //         }
+    //     });
+    // rpio.write(PIN_OUT, output_voltage);
     console.log();
 }, function (error) {
     console.error('Something went wrong:', error);
