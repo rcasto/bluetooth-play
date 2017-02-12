@@ -1,6 +1,6 @@
 require("babel-polyfill");
 
-// var rpio = require('rpio');
+var rpio = require('rpio');
 var network = require('./network');
 
 var TARGET = 'FC:DB:B3:42:4C:18';
@@ -13,10 +13,15 @@ network.scanTimer({
 }, 
 10000, 
 function (report) {
+    var output_voltage = rpio.LOW;
     network.getAddresses(report)
         .forEach(function (address) {
             console.log(address.address, '-', address.vendor);
+            if (address.address === TARGET) {
+                output_voltage = rpio.HIGH;
+            }
         });
+    rpio.write(PIN_OUT, output_voltage);
     console.log();
 }, function (error) {
     console.error('Something went wrong:', error);
