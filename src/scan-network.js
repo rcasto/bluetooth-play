@@ -5,9 +5,13 @@ var network = require('./network');
 
 var TARGET = 'FC:DB:B3:42:4C:18';
 var PIN_OUT = 11;
+var RETRY_COUNT = 3;
+
+var currentOutput = rpio.LOW;
+var currentRetryCount = 0;
 
 // Initialize pin out to low
-rpio.open(PIN_OUT, rpio.OUTPUT, rpio.LOW);
+rpio.open(PIN_OUT, rpio.OUTPUT, currentOutput);
 
 network.scanTimer({
     range: [
@@ -16,17 +20,19 @@ network.scanTimer({
 }, 
 10000, 
 function (report) {
-    var output_voltage = rpio.LOW;
-    console.log('Scan complete');
-    network.getAddresses(report)
-        .forEach(function (address) {
-            console.log(address.address, '-', address.vendor);
-            if (address.address === TARGET) {
-                output_voltage = rpio.HIGH;
-            }
-        });
-    rpio.write(PIN_OUT, output_voltage);
-    console.log();
+    var hasTarget = network.getAddresses(report).some(function (address) {
+        return address.address === TARGET;
+    });
+    if (hasTarget) {
+        currentOutput = rpio.HIGH;
+        currentRetryCount = RETRY_COUNT;
+    } else if (currentRetryCount > 0) {
+        currentRetryCount--;
+    } else {
+        currentOutput = rpio.LOW;
+    }
+    rpio.write(PIN_OUT, currentOutput);
+    network.printReport(report);
 }, function (error) {
     console.error('Something went wrong:', error);
 });

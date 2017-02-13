@@ -25,6 +25,14 @@ function getAddresses(report) {
     }));
 }
 
+function printReport(report) {
+    getAddresses(report)
+        .forEach(function (address) {
+            console.log(address.address, '-', address.vendor);
+        });
+    console.log();
+}
+
 function scan(options) {
     return new Promise((resolve, reject) => {
         nmap.scan(options, function (err, report) {
@@ -51,6 +59,7 @@ function scanTimer(options, scanInterval, onReport, onError) {
 
 module.exports =  {
     getAddresses,
+    printReport,
     scan,
     scanTimer
 };
