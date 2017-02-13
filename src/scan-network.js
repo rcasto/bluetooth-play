@@ -10,7 +10,7 @@ var RETRY_COUNT = 3;
 var currentOutput = rpio.LOW;
 var currentRetryCount = 0;
 
-// Initialize pin out to low
+// Initialize pin output and mode
 rpio.open(PIN_OUT, rpio.OUTPUT, currentOutput);
 
 network.scanTimer({
