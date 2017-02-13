@@ -33,6 +33,30 @@ function printReport(report) {
     console.log();
 }
 
+function buildAddressBag(report) {
+    var bag = {};
+    getAddresses(report).forEach(function (address) {
+        bag[address.address] = address;
+    });
+    return bag;
+}
+// With reference to the first report are the +'s and -'s
+function diffReports(report1, report2) {
+    var address1Bag = buildAddressBag(report1);
+    var address2Bag = buildAddressBag(report2);
+    Object.keys(address2Bag).forEach(function (address) {
+        if (address1Bag[address]) {
+            delete address1Bag[address];
+        } else { // added in the second report
+            console.log('+', address);
+        }
+    });
+    // Leftover addresses in bag 1 were removed in the second report
+    Object.keys(address1Bag).forEach(function (address) {
+        console.log('-', address);
+    });
+}
+
 function scan(options) {
     return new Promise((resolve, reject) => {
         nmap.scan(options, function (err, report) {
@@ -60,6 +84,7 @@ function scanTimer(options, scanInterval, onReport, onError) {
 module.exports =  {
     getAddresses,
     printReport,
+    diffReports,
     scan,
     scanTimer
 };

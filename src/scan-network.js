@@ -9,6 +9,7 @@ var RETRY_COUNT = 3;
 
 var currentOutput = rpio.LOW;
 var currentRetryCount = 0;
+var prevReport = null;
 
 // Initialize pin output and mode
 rpio.open(PIN_OUT, rpio.OUTPUT, currentOutput);
@@ -32,7 +33,12 @@ function (report) {
         currentOutput = rpio.LOW;
     }
     rpio.write(PIN_OUT, currentOutput);
-    network.printReport(report);
+    if (prevReport) {
+        network.diffReports(prevReport, report);
+    } else {
+        network.printReport(report);
+    }
+    prevReport = report;
 }, function (error) {
     console.error('Something went wrong:', error);
 });
