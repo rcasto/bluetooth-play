@@ -1,4 +1,4 @@
-require("babel-polyfill");
+require('babel-polyfill');
 
 var rpio = require('rpio');
 var network = require('./network');

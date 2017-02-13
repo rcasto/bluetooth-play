@@ -1,10 +1,10 @@
-require("babel-polyfill");
+require('babel-polyfill');
 
 var rpio = require('rpio');
 var bluetooth = require('./bluetooth');
 
 var PIN_OUT = 11;
-var TARGET = "54:40:AD:CF:46:82";
+var TARGET = '54:40:AD:CF:46:82';
 
 // Initialize pin out to low
 rpio.open(PIN_OUT, rpio.OUTPUT, rpio.LOW);
