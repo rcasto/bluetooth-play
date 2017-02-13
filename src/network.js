@@ -51,12 +51,12 @@ function diffReports(report1, report2) {
         if (address1Bag[address]) {
             delete address1Bag[address];
         } else { // added in the second report
-            console.log('+', buildAddressString(address2Bag[address]));
+            console.log('(+)', buildAddressString(address2Bag[address]));
         }
     });
     // Leftover addresses in bag 1 were removed in the second report
     Object.keys(address1Bag).forEach(function (address) {
-        console.log('-', buildAddressString(address1Bag[address]));
+        console.log('(-)', buildAddressString(address1Bag[address]));
     });
     console.log();
 }
