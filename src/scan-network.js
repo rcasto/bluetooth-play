@@ -17,6 +17,9 @@ rpio.open(PIN_OUT, rpio.OUTPUT, currentOutput);
 network.scanTimer({
     range: [
         '192.168.0.100-120'
+    ],
+    flags: [
+        '-n'
     ]
 }, 
 10000, 
