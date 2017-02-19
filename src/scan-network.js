@@ -5,7 +5,8 @@ var network = require('./network');
 
 var TARGET = 'FC:DB:B3:42:4C:18';
 var PIN_OUT = 11;
-var RETRY_COUNT = 3;
+var RETRY_COUNT = 2;
+var SCAN_DELAY = 15000;
 
 var currentOutput = rpio.LOW;
 var currentRetryCount = 0;
@@ -26,7 +27,7 @@ network.scanTimer({
         '--max-rtt-timeout 100ms'
     ]
 }, 
-10000, 
+SCAN_DELAY, 
 function (report) {
     var hasTarget = network.getAddresses(report).some(function (address) {
         return address.address === TARGET;
@@ -40,12 +41,12 @@ function (report) {
         currentOutput = rpio.LOW;
     }
     rpio.write(PIN_OUT, currentOutput);
-    if (prevReport) {
-        network.diffReports(prevReport, report);
-    } else {
-        network.printReport(report);
-    }
-    prevReport = report;
+    // if (prevReport) {
+    //     network.diffReports(prevReport, report);
+    // } else {
+    //     network.printReport(report);
+    // }
+    // prevReport = report;
 }, function (error) {
     console.error('Something went wrong:', error);
 });
