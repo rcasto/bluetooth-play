@@ -25,7 +25,8 @@ network.scanTimer({
         '-T4',
         '--max-retries 3',
         '--max-rtt-timeout 100ms'
-    ]
+    ],
+    timeout: 60
 }, 
 SCAN_DELAY, 
 function (report) {
