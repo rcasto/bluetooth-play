@@ -20,7 +20,8 @@ network.scanTimer({
     ],
     flags: [
         '-n',
-        '-T4'
+        '-T4',
+        '--max-retries 3'
     ]
 }, 
 10000, 
