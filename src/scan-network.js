@@ -51,3 +51,8 @@ function (report) {
 }, function (error) {
     console.error('Something went wrong:', error);
 });
+
+// Cleanup when stopping scan
+process.on('exit', function () {
+    rpio.close(PIN_OUT, rpio.PIN_RESET);
+});
