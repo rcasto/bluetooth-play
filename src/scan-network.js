@@ -16,12 +16,14 @@ rpio.open(PIN_OUT, rpio.OUTPUT, currentOutput);
 
 network.scanTimer({
     range: [
-        '192.168.0.100-120'
+        '192.168.0.100-115'
     ],
+    // Playing with flags described here: https://nmap.org/book/man-performance.html
     flags: [
         '-n',
         '-T4',
-        '--max-retries 3'
+        '--max-retries 3',
+        '--max-rtt-timeout 100ms'
     ]
 }, 
 10000, 
