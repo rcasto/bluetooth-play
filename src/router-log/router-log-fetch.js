@@ -113,14 +113,15 @@ function fetchSystemLogUpdates() {
         });
 }
 
-function fetchSystemLogUpdatesTimer(timerDelay, onLogUpdates) {
+function fetchSystemLogUpdatesTimer(timerDelay, onLogUpdates, onError) {
     var timeoutid;
     (function _fetchSystemLogUpdates() {
         fetchSystemLogUpdates()
             .then(onLogUpdates)
             .then(function () {
                 timeoutid = setTimeout(_fetchSystemLogUpdates, timerDelay);
-            });
+            })
+            .catch(onError);
     }());
     return () => clearTimeout(timeoutid);
 }

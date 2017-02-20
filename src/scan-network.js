@@ -25,6 +25,10 @@ function startCircuit(hasTarget) {
     rpio.write(PIN_OUT, currentOutput);
 }
 
+function onError(error) {
+    console.error('Something went wrong:', error);
+}
+
 // Initialize pin output and mode
 rpio.open(PIN_OUT, rpio.OUTPUT, currentOutput);
 
@@ -48,9 +52,7 @@ rpio.open(PIN_OUT, rpio.OUTPUT, currentOutput);
 //         return address.address === TARGET;
 //     });
 //     startCircuit(hasTarget);
-// }, function (error) {
-//     console.error('Something went wrong:', error);
-// });
+// }, onError);
 
 // Router Log Scanner
 routerFetch.fetchSystemLogUpdatesTimer(SCAN_DELAY, function (logs) {
@@ -58,7 +60,7 @@ routerFetch.fetchSystemLogUpdatesTimer(SCAN_DELAY, function (logs) {
         return log.address === TARGET;
     });
     startCircuit(hasTarget);
-});
+}, onError);
 
 // Cleanup when stopping scan
 process.on('exit', function () {
