@@ -71,5 +71,5 @@ routerFetch.fetchSystemLogUpdatesTimer(SCAN_DELAY, function (logs) {
 
 // Cleanup when stopping scan
 process.on('exit', function () {
-    rpio.close(PIN_OUT, rpio.PIN_RESET);
+    rpio.close(PIN_OUT);
 });
