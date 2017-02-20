@@ -7,12 +7,13 @@
     "prestart": "babel src --presets es2015 --out-dir dist",
     "start": "node dist/scan-pi.js",
     "clean": "rm -rf dist node_modules",
-    "network": "npm run prestart && node dist/scan-network.js" 
+    "network": "npm run prestart && node dist/scan-network.js"
   },
   "author": "Richie Casto",
   "license": "ISC",
   "dependencies": {
     "bluetooth-serial-port": "^2.1.1",
+    "cheerio": "^0.22.0",
     "libnmap": "^0.3.9",
     "rpio": "^0.9.15"
   },
