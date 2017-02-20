@@ -6,7 +6,7 @@ var routerFetch = require('./router-log/router-log-fetch');
 
 var TARGET = 'FC:DB:B3:42:4C:18';
 var PIN_OUT = 11;
-var RETRY_COUNT = 2;
+var RETRY_COUNT = 3;
 var SCAN_DELAY = 15000;
 
 var currentOutput = rpio.LOW;
