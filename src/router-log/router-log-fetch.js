@@ -28,17 +28,22 @@ function extractSecretFromResponse(response) {
 function extractSystemLogs(response) {
     var extractRegex = /"(.*)"/g;
     var responseText = cheerio.load(response)('script').eq(1).text();
-    var systemLogs = [], systemLog, address, timestamp;
+    var systemLogs = [], systemLog;
+    var address, timestamp, type, level;
     while ((systemLog = extractRegex.exec(responseText)) !== null) {
         systemLog = systemLog[1].split('\t');
         
         timestamp = systemLog[0];
+        type = systemLog[1];
+        level = systemLog[2];
         address = systemLog[3].split(' ');
         address = address[4] || address[3];
         
         systemLogs.push({
             timestamp: timestamp,
-            address: address
+            address: address,
+            type: type,
+            level: level
         });
     }
     return systemLogs;
@@ -56,7 +61,8 @@ function findAnySystemLog(targets, systemLogs) {
     systemLogs.some(function (log, i) {
         return targets.some(function (target) {
             if (log.address === target.address &&
-                log.timestamp === target.timestamp) {
+                log.type === target.type &&
+                log.level === target.level) {
                 index = i;
                 return true;
             }
