@@ -4,8 +4,7 @@ var cheerio = require('cheerio');
 var encrypt = require('./encrypt');
 var config = require('./config.json');
 
-var latestRecords = [];
-var num_latest_records = 3;
+var latestRecord = null;
 
 // TP-Link Model No. TL-WR841N
 var host = '192.168.0.1';
@@ -110,16 +109,10 @@ function fetchSystemLogs() {
 }
 
 function fetchSystemLogUpdates() {
-    if (latestRecords.length <= 0) {
+    if (!latestRecord) {
         return fetchSystemLogs().then((systemLogs) => {
-            if (systemLogs.length > 0) {
-                if (systemLogs[2]) {
-                    latestRecords.push(systemLogs[2]);
-                }
-                if (systemLogs[1]) {
-                    latestRecords.push(systemLogs[1]);
-                }
-                latestRecords.push(systemLogs[0]);
+            if (systemLogs[0]) {
+                latestRecord = systemLogs[0];
             }
             return [];
         });
@@ -128,21 +121,17 @@ function fetchSystemLogUpdates() {
         .then((systemLogs) => {
             return {
                 logs: systemLogs,
-                index: findAnySystemLog(latestRecords, systemLogs)
+                index: findAnySystemLog(latestRecord, systemLogs)
             };
         })
         .then((systemLogReport) => {
-            console.log('Set latest:', latestRecords);
-            if (systemLogReport.logs[0] &&
-                findAnySystemLog(systemLogReport.logs[0], latestRecords) < 0) {
-                if (latestRecords.length === num_latest_records) {
-                    latestRecords.shift();
-                }
-                latestRecords.push(systemLogReport.logs[0]);
+            console.log('Set latest:', latestRecord);
+            if (systemLogReport.logs[0]) {
+                latestRecord = systemLogReport.logs[0];
             }
             // Return all logs if latest record not found
             if (systemLogReport.index < 0) {
-                console.log('Huh?', latestRecords, systemLogReport);
+                console.log('Huh?', latestRecord, systemLogReport);
                 systemLogReport.index = systemLogReport.logs.length;
             }
             return systemLogReport.logs.slice(0, systemLogReport.index);
