@@ -13,14 +13,16 @@ var currentOutput = rpio.LOW;
 var currentRetryCount = 0;
 var prevReport = null;
 
-function startCircuit(hasTarget) {
+function startCircuit(hasTarget, isRouterLog) {
     if (hasTarget) {
         currentOutput = rpio.HIGH;
         currentRetryCount = RETRY_COUNT;
-    } else if (currentRetryCount > 0) {
-        currentRetryCount--;
-    } else {
-        currentOutput = rpio.LOW;
+    } else if (!isRouterLog) {
+        if (currentRetryCount > 0) {
+            currentRetryCount--;
+        } else {
+            currentOutput = rpio.LOW;
+        }
     }
     rpio.write(PIN_OUT, currentOutput);
 }
@@ -51,7 +53,7 @@ function (report) {
     var hasTarget = network.getAddresses(report).some(function (address) {
         return address.address === TARGET;
     });
-    startCircuit(hasTarget);
+    startCircuit(hasTarget, false);
 }, onError);
 
 // Router Log Scanner
@@ -59,7 +61,7 @@ routerFetch.fetchSystemLogUpdatesTimer(SCAN_DELAY, function (logs) {
     var hasTarget = logs.some((log) => {
         return log.address === TARGET;
     });
-    startCircuit(hasTarget);
+    startCircuit(hasTarget, true);
 }, onError);
 
 // Cleanup when stopping scan
