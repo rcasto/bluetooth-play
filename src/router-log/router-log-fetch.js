@@ -17,6 +17,10 @@ var password = encrypt.hex_md5(config.password);
 var auth = `Basic ${encrypt.Base64Encoding(`${config.username}:${password}`)}`;
 var authCookie = `Authorization=${encodeURIComponent(auth)};path=/`;
 
+var initPromise = fetchSystemLogs().then((systemLogs) => {
+    latestRecord = systemLogs[0];
+});
+
 function extractSecretFromResponse(response) {
     var responseText = cheerio.load(response)('script').text();
     var responseUrl = /"(.*)"/.exec(responseText)[1];
@@ -96,9 +100,10 @@ function fetchSystemLogs() {
 }
 
 function fetchSystemLogUpdates() {
-    console.log('Latest:', latestRecord);
-    return fetchSystemLogs()
+    return initPromise()
+        .then(fetchSystemLogs)
         .then((systemLogs) => {
+            console.log('Latest:', latestRecord);
             return {
                 logs: systemLogs,
                 index: findSystemLog(latestRecord, systemLogs)
@@ -126,15 +131,6 @@ function fetchSystemLogUpdatesTimer(timerDelay, onLogUpdates, onError) {
     }());
     return () => clearTimeout(timeoutid);
 }
-
-/*
-    Initialization
-    Grab latest system logs and set point at latest record
-    We want to be able to track system log updates from initialization
-*/
-fetchSystemLogs().then((systemLogs) => {
-    latestRecord = systemLogs[0];
-});
 
 module.exports = {
     fetchSystemLogs,
