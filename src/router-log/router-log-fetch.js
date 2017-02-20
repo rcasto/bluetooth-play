@@ -102,7 +102,7 @@ function fetchSystemLogUpdates() {
             return [];
         });
     }
-    return fetchSystemLogs
+    return fetchSystemLogs()
         .then((systemLogs) => {
             return {
                 logs: systemLogs,
