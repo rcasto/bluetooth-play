@@ -98,7 +98,7 @@ function fetchSystemLogs() {
 function fetchSystemLogUpdates() {
     if (!latestRecord) {
         return fetchSystemLogs().then((systemLogs) => {
-            latestRecord = systemLogs[0];
+            latestRecord = (systemLogs && systemLogs[0]) || latestRecord;
             return [];
         });
     }
@@ -110,7 +110,9 @@ function fetchSystemLogUpdates() {
             };
         })
         .then((systemLogReport) => {
-            latestRecord = systemLogReport.logs[0];
+            latestRecord = (systemLogReport && 
+                           systemLogReport.logs && 
+                           systemLogReport.logs[0]) || latestRecord;
             // Return all logs if latest record not found
             if (systemLogReport.index < 0) {
                 console.log('Huh?', latestRecord, systemLogReport);
