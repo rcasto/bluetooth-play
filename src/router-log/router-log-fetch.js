@@ -44,9 +44,13 @@ function extractSystemLogs(response) {
     return systemLogs;
 }
 
-function findSystemLog(targets, systemLogs) {
+function findAnySystemLog(targets, systemLogs) {
     systemLogs = systemLogs || [];
     targets = targets || [];
+
+    if (!Array.isArray(targets)) {
+        targets = [targets];
+    }
 
     var index = -1;
     systemLogs.some(function (log, i) {
@@ -118,13 +122,13 @@ function fetchSystemLogUpdates() {
         .then((systemLogs) => {
             return {
                 logs: systemLogs,
-                index: findSystemLog(latestRecords, systemLogs)
+                index: findAnySystemLog(latestRecords, systemLogs)
             };
         })
         .then((systemLogReport) => {
             console.log('Set latest:', latestRecords);
             if (systemLogReport.logs[0] &&
-                findSystemLog([systemLogReport.logs[0]], latestRecords) < 0) {
+                findAnySystemLog(systemLogReport.logs[0], latestRecords) < 0) {
                 if (latestRecords.length === num_latest_records) {
                     latestRecords.shift();
                 }
