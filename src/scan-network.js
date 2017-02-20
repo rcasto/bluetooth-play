@@ -33,30 +33,29 @@ function onError(error) {
 rpio.open(PIN_OUT, rpio.OUTPUT, currentOutput);
 
 // NMAP Scanner
-// network.scanTimer({
-//     range: [
-//         '192.168.0.100-115'
-//     ],
-//     // Playing with flags described here: https://nmap.org/book/man-performance.html
-//     flags: [
-//         '-n',
-//         '-T4',
-//         '--max-retries 3',
-//         '--max-rtt-timeout 100ms'
-//     ],
-//     timeout: 60
-// }, 
-// SCAN_DELAY, 
-// function (report) {
-//     var hasTarget = network.getAddresses(report).some(function (address) {
-//         return address.address === TARGET;
-//     });
-//     startCircuit(hasTarget);
-// }, onError);
+network.scanTimer({
+    range: [
+        '192.168.0.100-115'
+    ],
+    // Playing with flags described here: https://nmap.org/book/man-performance.html
+    flags: [
+        '-n',
+        '-T4',
+        '--max-retries 3',
+        '--max-rtt-timeout 100ms'
+    ],
+    timeout: 60
+}, 
+SCAN_DELAY, 
+function (report) {
+    var hasTarget = network.getAddresses(report).some(function (address) {
+        return address.address === TARGET;
+    });
+    startCircuit(hasTarget);
+}, onError);
 
 // Router Log Scanner
 routerFetch.fetchSystemLogUpdatesTimer(SCAN_DELAY, function (logs) {
-    console.log('Logs:', logs);
     var hasTarget = logs.some((log) => {
         return log.address === TARGET;
     });
