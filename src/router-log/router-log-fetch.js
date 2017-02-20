@@ -20,6 +20,7 @@ var authCookie = `Authorization=${encodeURIComponent(auth)};path=/`;
 
 function extractSecretFromResponse(response) {
     var responseText = cheerio.load(response)('script').text();
+    console.log(responseText);
     var responseUrl = extractRegex.exec(responseText)[1];
     var responseUrlObj = url.parse(responseUrl);
     return responseUrlObj.pathname.split('/')[1];
