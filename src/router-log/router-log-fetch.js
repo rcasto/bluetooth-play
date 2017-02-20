@@ -110,6 +110,7 @@ function fetchSystemLogUpdates() {
             };
         })
         .then((systemLogReport) => {
+            console.log('Set latest:', latestRecord);
             latestRecord = (systemLogReport && 
                            systemLogReport.logs && 
                            systemLogReport.logs[0]) || latestRecord;
