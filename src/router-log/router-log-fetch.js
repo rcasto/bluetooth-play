@@ -4,7 +4,6 @@ var cheerio = require('cheerio');
 var encrypt = require('./encrypt');
 var config = require('./config.json');
 
-var extractRegex = /"(.*)"/g;
 var latestRecord = null;
 
 // TP-Link Model No. TL-WR841N
@@ -23,12 +22,13 @@ console.log('Credentials:', config.username, config.password);
 function extractSecretFromResponse(response) {
     var responseText = cheerio.load(response)('script').text();
     console.log(responseText);
-    var responseUrl = extractRegex.exec(responseText)[1];
+    var responseUrl = /"(.*)"/.exec(responseText)[1];
     var responseUrlObj = url.parse(responseUrl);
     return responseUrlObj.pathname.split('/')[1];
 }
 
 function extractSystemLogs(response) {
+    var extractRegex = /"(.*)"/g;
     var responseText = cheerio.load(response)('script').eq(1).text();
     var systemLogs = [], systemLog, address, timestamp;
     while ((systemLog = extractRegex.exec(responseText)) !== null) {
