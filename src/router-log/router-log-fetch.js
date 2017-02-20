@@ -33,10 +33,10 @@ function extractSystemLogs(response) {
         systemLog = systemLog[1].split('\t');
         
         timestamp = systemLog[0];
-        type = systemLog[1];
-        level = systemLog[2];
-        address = systemLog[3].split(' ');
-        address = address[4] || address[3];
+        type = ((systemLog[1] && systemLog[1]) || '').trim();
+        level = ((systemLog[2] && systemLog[2]) || '').trim();
+        address = (systemLog[3] && systemLog[3].split(' ')) || [];
+        address = ((address[4] || address[3]) || '').trim();
         
         systemLogs.push({
             timestamp: timestamp,
