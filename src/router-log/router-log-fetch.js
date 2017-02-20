@@ -18,6 +18,7 @@ var auth = `Basic ${encrypt.Base64Encoding(`${config.username}:${password}`)}`;
 var authCookie = `Authorization=${encodeURIComponent(auth)};path=/`;
 
 var initPromise = fetchSystemLogs().then((systemLogs) => {
+    console.log('Setting latest record:', systemLogs[0]);
     latestRecord = systemLogs[0];
 });
 
