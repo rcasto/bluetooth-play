@@ -17,11 +17,6 @@ var password = encrypt.hex_md5(config.password);
 var auth = `Basic ${encrypt.Base64Encoding(`${config.username}:${password}`)}`;
 var authCookie = `Authorization=${encodeURIComponent(auth)};path=/`;
 
-var initPromise = fetchSystemLogs().then((systemLogs) => {
-    console.log('Setting latest record:', systemLogs[0]);
-    latestRecord = systemLogs[0];
-});
-
 function extractSecretFromResponse(response) {
     var responseText = cheerio.load(response)('script').text();
     var responseUrl = /"(.*)"/.exec(responseText)[1];
@@ -101,10 +96,14 @@ function fetchSystemLogs() {
 }
 
 function fetchSystemLogUpdates() {
-    return initPromise
-        .then(fetchSystemLogs)
+    if (!latestRecord) {
+        return fetchSystemLogs().then((systemLogs) => {
+            latestRecord = systemLogs[0];
+            return [];
+        });
+    }
+    return fetchSystemLogs
         .then((systemLogs) => {
-            console.log('Latest:', latestRecord);
             return {
                 logs: systemLogs,
                 index: findSystemLog(latestRecord, systemLogs)
