@@ -113,6 +113,7 @@ function fetchSystemLogUpdates() {
             latestRecord = systemLogReport.logs[0];
             // Return all logs if latest record not found
             if (systemLogReport.index < 0) {
+                console.log('Huh?', latestRecord, systemLogReport);
                 systemLogReport.index = systemLogReport.logs.length;
             }
             return systemLogReport.logs.slice(0, systemLogReport.index);
