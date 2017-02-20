@@ -53,6 +53,10 @@ function (report) {
     var hasTarget = network.getAddresses(report).some(function (address) {
         return address.address === TARGET;
     });
+    if (prevReport) {
+        console.log('Report:', network.diffReports(prevReport, report));
+    }
+    prevReport = report;
     startCircuit(hasTarget, false);
 }, onError);
 
@@ -61,6 +65,7 @@ routerFetch.fetchSystemLogUpdatesTimer(SCAN_DELAY, function (logs) {
     var hasTarget = logs.some((log) => {
         return log.address === TARGET;
     });
+    console.log("Logs:", logs, hasTarget);
     startCircuit(hasTarget, true);
 }, onError);
 
