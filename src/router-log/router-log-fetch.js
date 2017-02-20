@@ -17,11 +17,8 @@ var password = encrypt.hex_md5(config.password);
 var auth = `Basic ${encrypt.Base64Encoding(`${config.username}:${password}`)}`;
 var authCookie = `Authorization=${encodeURIComponent(auth)};path=/`;
 
-console.log('Credentials:', config.username, config.password);
-
 function extractSecretFromResponse(response) {
     var responseText = cheerio.load(response)('script').text();
-    console.log(responseText);
     var responseUrl = /"(.*)"/.exec(responseText)[1];
     var responseUrlObj = url.parse(responseUrl);
     return responseUrlObj.pathname.split('/')[1];
