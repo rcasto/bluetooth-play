@@ -96,6 +96,7 @@ function fetchSystemLogs() {
 }
 
 function fetchSystemLogUpdates() {
+    console.log('Latest:', latestRecord);
     return fetchSystemLogs()
         .then((systemLogs) => {
             return {

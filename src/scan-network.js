@@ -56,7 +56,7 @@ rpio.open(PIN_OUT, rpio.OUTPUT, currentOutput);
 
 // Router Log Scanner
 routerFetch.fetchSystemLogUpdatesTimer(SCAN_DELAY, function (logs) {
-    console.log('Logs:', logs);
+    // console.log('Logs:', logs);
     var hasTarget = logs.some((log) => {
         return log.address === TARGET;
     });
