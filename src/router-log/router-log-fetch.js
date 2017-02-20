@@ -4,7 +4,8 @@ var cheerio = require('cheerio');
 var encrypt = require('./encrypt');
 var config = require('./config.json');
 
-var latestRecord = null;
+var latestRecords = [];
+var num_latest_records = 3;
 
 // TP-Link Model No. TL-WR841N
 var host = '192.168.0.1';
@@ -43,17 +44,20 @@ function extractSystemLogs(response) {
     return systemLogs;
 }
 
-function findSystemLog(systemLog, systemLogs) {
+function findSystemLog(targets, systemLogs) {
     systemLogs = systemLogs || [];
-    systemLog = systemLog || {};
+    targets = targets || [];
 
     var index = -1;
     systemLogs.some(function (log, i) {
-        if (log.address === systemLog.address &&
-            log.timestamp === systemLog.timestamp) {
-            index = i;
-            return true;
-        }
+        return targets.some(function (target) {
+            if (log.address === target.address &&
+                log.timestamp === target.timestamp) {
+                index = i;
+                return true;
+            }
+            return false;
+        });
         return false;
     });
     return index;
@@ -96,9 +100,17 @@ function fetchSystemLogs() {
 }
 
 function fetchSystemLogUpdates() {
-    if (!latestRecord) {
+    if (latestRecords.length <= 0) {
         return fetchSystemLogs().then((systemLogs) => {
-            latestRecord = (systemLogs && systemLogs[0]) || latestRecord;
+            if (systemLogs.length > 0) {
+                if (systemLogs[2]) {
+                    latestRecords.push(systemLogs[2]);
+                }
+                if (systemLogs[1]) {
+                    latestRecords.push(systemLogs[1]);
+                }
+                latestRecords.push(systemLogs[0]);
+            }
             return [];
         });
     }
@@ -106,17 +118,21 @@ function fetchSystemLogUpdates() {
         .then((systemLogs) => {
             return {
                 logs: systemLogs,
-                index: findSystemLog(latestRecord, systemLogs)
+                index: findSystemLog(latestRecords, systemLogs)
             };
         })
         .then((systemLogReport) => {
-            console.log('Set latest:', latestRecord);
-            latestRecord = (systemLogReport && 
-                           systemLogReport.logs && 
-                           systemLogReport.logs[0]) || latestRecord;
+            console.log('Set latest:', latestRecords);
+            if (systemLogReport.logs[0] &&
+                latestRecords.indexOf(systemLogReport.logs[0]) < 0) {
+                if (latestRecords.length === num_latest_records) {
+                    latestRecords.shift();
+                }
+                 latestRecords.push(systemLogReport.logs[0]);
+            }
             // Return all logs if latest record not found
             if (systemLogReport.index < 0) {
-                console.log('Huh?', latestRecord, systemLogReport);
+                console.log('Huh?', latestRecords, systemLogReport);
                 systemLogReport.index = systemLogReport.logs.length;
             }
             return systemLogReport.logs.slice(0, systemLogReport.index);
