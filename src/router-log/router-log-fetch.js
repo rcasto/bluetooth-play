@@ -101,7 +101,7 @@ function fetchSystemLogs() {
 }
 
 function fetchSystemLogUpdates() {
-    return initPromise()
+    return initPromise
         .then(fetchSystemLogs)
         .then((systemLogs) => {
             console.log('Latest:', latestRecord);
