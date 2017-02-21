@@ -54,8 +54,8 @@ function extractConnectedClients(response) {
     // Create IIFE to not pollute global scope
     return (() => {
         console.log('Test before:', responseText);
-        eval(responseText);
-        // console.log('Test after:', hostList);
+        var test = eval(`(() => { ${responseText} return hostList; })()`);
+        console.log('Test after:', test);
         return (typeof hostList !== "undefined" && hostList && hostList.filter((host) => {
             return typeof host === 'string';
         })) || [];
