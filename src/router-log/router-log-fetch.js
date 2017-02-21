@@ -54,6 +54,7 @@ function extractConnectedClients(response) {
     // Create IIFE to not pollute global scope
     return (() => {
         var hostList = null;
+        console.log('Test:', responseText);
         eval(responseText);
         return (hostList && hostList.filter((host) => {
             return typeof host === 'string';
@@ -193,6 +194,11 @@ function fetchConnectedClientsTimer(timerDelay, onResults, onError) {
     }());
     return () => clearTimeout(timeoutid);
 }
+
+// Testing
+// fetchConnectedClientsTimer(10000, (response) => {
+//     console.log('Response:', response);
+// }, (error) => console.error(error));
 
 module.exports = {
     fetchSystemLogs,
