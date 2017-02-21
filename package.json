@@ -5,9 +5,8 @@
   "main": "index.js",
   "scripts": {
     "prestart": "babel src --presets es2015 --out-dir dist --copy-files",
-    "start": "node dist/scan-pi.js",
-    "clean": "rm -rf dist node_modules",
-    "network": "npm run prestart && node dist/scan-network.js"
+    "start": "node dist/network/network-scan.js",
+    "clean": "rm -rf dist node_modules"
   },
   "author": "Richie Casto",
   "license": "ISC",

@@ -1,8 +1,19 @@
 require('babel-polyfill');
 
-var rpio = require('rpio');
-var network = require('./network');
-var routerFetch = require('./router-log/router-log-fetch');
+var rpio;
+if (isRaspberryPi) {
+    rpio = require('rpio');
+} else {
+    // mock object
+    rpio = {
+        write: () => { },
+        close: () => { },
+        open: () => { }
+    };
+}
+
+var network = require('./network-lib');
+var routerFetch = require('./router-info/router-info');
 
 var TARGET = 'FC:DB:B3:42:4C:18';
 var TARGET_CONNECTED = TARGET.replace(/:/g, '-');
@@ -12,12 +23,10 @@ var RETRY_COUNT = {
     CONNECTED: 1
 };
 var SCAN_DELAYS = {
-    ROUTER_LOG: 20000,
     NMAP: 15000,
     CONNECTED: 5000
 };
 var SCANS = {
-    ROUTER_LOG: 'routerlog',
     NMAP: 'nmap',
     CONNECTED: 'clients'
 };
@@ -37,12 +46,10 @@ function startCircuit(hasTarget, type) {
     if (hasTarget) {
         currentOutput = rpio.HIGH;
         resetRetryCounts();
-    } else if (type !== SCANS.ROUTER_LOG) {
-        if (currentRetryCount[type] > 0) {
-            currentRetryCount[type]--;
-        } else {
-            currentOutput = rpio.LOW;
-        }
+    } else if (currentRetryCount[type] > 0) {
+        currentRetryCount[type]--;
+    } else {
+        currentOutput = rpio.LOW;
     }
     rpio.write(PIN_OUT, currentOutput);
 }
@@ -78,27 +85,18 @@ function (report) {
         return address.address === TARGET;
     });
     if (prevReport) {
-        console.log('Report:', network.diffReports(prevReport, report));
+        console.log('NMAP Report:', network.diffReports(prevReport, report));
     }
     prevReport = report;
     startCircuit(hasTarget, SCANS.NMAP);
 }, onError);
-
-// Router Log Scanner
-// routerFetch.fetchSystemLogUpdatesTimer(SCAN_DELAYS.ROUTER_LOG, (logs) => {
-//     var hasTarget = logs.some((log) => {
-//         return log.address === TARGET;
-//     });
-//     console.log("Logs:", logs, hasTarget);
-//     startCircuit(hasTarget, SCANS.ROUTER_LOG);
-// }, onError);
 
 // Connected Clients Scanner
 routerFetch.fetchConnectedClientsTimer(SCAN_DELAYS.CONNECTED, (clients) => {
     var hasTarget = clients.some((client) => {
         return client === TARGET_CONNECTED;
     });
-    console.log("Clients:", clients, hasTarget);
+    console.log("Connected Clients:", clients, hasTarget);
     startCircuit(hasTarget, SCANS.CONNECTED);
 }, onError);
 

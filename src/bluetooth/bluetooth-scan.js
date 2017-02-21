@@ -1,7 +1,7 @@
 require('babel-polyfill');
 
 var rpio = require('rpio');
-var bluetooth = require('./bluetooth');
+var bluetooth = require('./bluetooth-lib');
 
 var PIN_OUT = 11;
 var TARGET = '54:40:AD:CF:46:82';
