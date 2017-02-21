@@ -47,6 +47,10 @@ function startCircuit(hasTarget, type) {
     rpio.write(PIN_OUT, currentOutput);
 }
 
+function cleanup() {
+    rpio.close(PIN_OUT);
+}
+
 function onError(error) {
     console.error('Something went wrong:', error);
 }
@@ -99,7 +103,5 @@ routerFetch.fetchConnectedClientsTimer(SCAN_DELAYS.CONNECTED, (clients) => {
 }, onError);
 
 // Cleanup when stopping scans
-process.on('exit', function () {
-    rpio.write(PIN_OUT, rpio.LOW);
-    rpio.close(PIN_OUT);
-});
+process.on('exit', cleanup);
+process.on('SIGINT', cleanup);
