@@ -50,7 +50,7 @@ network.scanTimer({
 }, 
 SCAN_DELAY, 
 function (report) {
-    var hasTarget = network.getAddresses(report).some(function (address) {
+    var hasTarget = network.getAddresses(report).some((address) => {
         return address.address === TARGET;
     });
     if (prevReport) {
@@ -61,15 +61,24 @@ function (report) {
 }, onError);
 
 // Router Log Scanner
-routerFetch.fetchSystemLogUpdatesTimer(SCAN_DELAY, function (logs) {
-    var hasTarget = logs.some((log) => {
-        return log.address === TARGET;
+// routerFetch.fetchSystemLogUpdatesTimer(SCAN_DELAY, (logs) => {
+//     var hasTarget = logs.some((log) => {
+//         return log.address === TARGET;
+//     });
+//     console.log("Logs:", logs, hasTarget);
+//     startCircuit(hasTarget, true);
+// }, onError);
+
+// Connected Clients Scanner
+routerFetch.fetchConnectedClientsTimer(SCAN_DELAY, (clients) => {
+    var hasTarget = clients.some((client) => {
+        return client === TARGET;
     });
-    console.log("Logs:", logs, hasTarget);
-    startCircuit(hasTarget, true);
+    console.log("Clients:", clients, hasTarget);
+    startCircuit(hasTarget, false);
 }, onError);
 
-// Cleanup when stopping scan
+// Cleanup when stopping scans
 process.on('exit', function () {
     rpio.close(PIN_OUT);
 });

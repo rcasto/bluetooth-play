@@ -11,6 +11,7 @@ var host = '192.168.0.1';
 var loginPath = '/userRpm/LoginRpm.htm?Save=Save';
 var systemLogPath = '/userRpm/SystemLogRpm.htm';
 var menuPath = '/userRpm/MenuRpm.htm';
+var connectedClientsPath = '/userRpm/WlanStationRpm.htm?Page=1&vapIdx=';
 
 // Create authorization cookie
 var password = encrypt.hex_md5(config.password);
@@ -48,6 +49,17 @@ function extractSystemLogs(response) {
     return systemLogs;
 }
 
+function extractConnectedClients(response) {
+    var responseText = cheerio.load(response)('script').eq(1).text();
+    // Create IIFE to not pollute global scope
+    return (() => {
+        eval(responseText);
+        return (hostList && hostList.filter((host) => {
+            return typeof host === 'string';
+        })) || [];
+    })();
+}
+
 function findAnySystemLog(targets, systemLogs) {
     systemLogs = systemLogs || [];
     targets = targets || [];
@@ -72,6 +84,17 @@ function findAnySystemLog(targets, systemLogs) {
     return index;
 }
 
+function loginAndGetSecret() {
+    return fetchUrlResponse({
+        host: host,
+        path: loginPath,
+        headers: {
+            'Cookie': authCookie
+        }
+    })
+    .then(extractSecretFromResponse); 
+}
+
 function fetchUrlResponse(options) {
     return new Promise((resolve, reject) => {
         http.get(options, (res) => {
@@ -86,26 +109,34 @@ function fetchUrlResponse(options) {
     });
 }
 
+function fetchConnectedClients() {
+    return loginAndGetSecret()
+        .then((secret) => {
+            return fetchUrlResponse({
+                host: host,
+                path: `/${secret}${connectedClientsPath}`,
+                headers: {
+                    'Cookie': authCookie,
+                    'Referer': `http://${host}/${secret}${menuPath}`
+                }
+            });
+        })
+        .then(extractConnectedClients);
+}
+
 function fetchSystemLogs() {
-    return fetchUrlResponse({
-        host: host,
-        path: loginPath,
-        headers: {
-            'Cookie': authCookie
-        }
-    })
-    .then((response) => {
-        var secret = extractSecretFromResponse(response);
-        return fetchUrlResponse({
-            host: host,
-            path: `/${secret}${systemLogPath}`,
-            headers: {
-                'Cookie': authCookie,
-                'Referer': `http://${host}/${secret}${menuPath}`
-            }
-        });
-    })
-    .then(extractSystemLogs);
+    return loginAndGetSecret()
+        .then((secret) => {
+            return fetchUrlResponse({
+                host: host,
+                path: `/${secret}${systemLogPath}`,
+                headers: {
+                    'Cookie': authCookie,
+                    'Referer': `http://${host}/${secret}${menuPath}`
+                }
+            });
+        })
+        .then(extractSystemLogs);
 }
 
 function fetchSystemLogUpdates() {
@@ -149,8 +180,23 @@ function fetchSystemLogUpdatesTimer(timerDelay, onLogUpdates, onError) {
     return () => clearTimeout(timeoutid);
 }
 
+function fetchConnectedClientsTimer(timerDelay, onResults, onError) {
+    var timeoutid;
+    (function _fetchConnectedClients() {
+        fetchConnectedClients()
+            .then(onResults)
+            .then(function () {
+                timeoutid = setTimeout(_fetchConnectedClients, timerDelay);
+            })
+            .catch(onError);
+    }());
+    return () => clearTimeout(timeoutid);
+}
+
 module.exports = {
     fetchSystemLogs,
     fetchSystemLogUpdates,
-    fetchSystemLogUpdatesTimer
+    fetchSystemLogUpdatesTimer,
+    fetchConnectedClients,
+    fetchConnectedClientsTimer
 };
