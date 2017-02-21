@@ -56,6 +56,7 @@ function startCircuit(hasTarget, type) {
 
 function cleanup() {
     rpio.close(PIN_OUT);
+    process.exit();
 }
 
 function onError(error) {
