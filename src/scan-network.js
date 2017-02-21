@@ -61,13 +61,13 @@ function (report) {
 }, onError);
 
 // Router Log Scanner
-// routerFetch.fetchSystemLogUpdatesTimer(SCAN_DELAY, (logs) => {
-//     var hasTarget = logs.some((log) => {
-//         return log.address === TARGET;
-//     });
-//     console.log("Logs:", logs, hasTarget);
-//     startCircuit(hasTarget, true);
-// }, onError);
+routerFetch.fetchSystemLogUpdatesTimer(SCAN_DELAY, (logs) => {
+    var hasTarget = logs.some((log) => {
+        return log.address === TARGET;
+    });
+    console.log("Logs:", logs, hasTarget);
+    startCircuit(hasTarget, true);
+}, onError);
 
 // Connected Clients Scanner
 routerFetch.fetchConnectedClientsTimer(SCAN_DELAY, (clients) => {
