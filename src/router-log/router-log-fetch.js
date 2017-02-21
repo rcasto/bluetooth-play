@@ -50,6 +50,7 @@ function extractSystemLogs(response) {
 }
 
 function extractConnectedClients(response) {
+    console.log('Responseeesdf:', response);
     var responseText = cheerio.load(response)('script').eq(1).text();
     // Create IIFE to not pollute global scope
     return (() => {
