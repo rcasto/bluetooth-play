@@ -7,24 +7,39 @@ var routerFetch = require('./router-log/router-log-fetch');
 var TARGET = 'FC:DB:B3:42:4C:18';
 var TARGET_CONNECTED = TARGET.replace(/:/g, '-');
 var PIN_OUT = 11;
-var RETRY_COUNT = 2;
+var RETRY_COUNT = {
+    NMAP: 3,
+    CONNECTED: 5
+};
 var SCAN_DELAYS = {
     ROUTER_LOG: 20000,
     NMAP: 20000,
     CONNECTED: 10000
 };
+var SCANS = {
+    ROUTER_LOG: 'routerlog',
+    NMAP: 'nmap',
+    CONNECTED: 'clients'
+};
 
 var currentOutput = rpio.LOW;
-var currentRetryCount = 0;
+var currentRetryCount = resetRetryCounts();
 var prevReport = null;
 
-function startCircuit(hasTarget, isRouterLog) {
+function resetRetryCounts() {
+    return (currentRetryCount = {
+        [SCANS.NMAP]: RETRY_COUNT.NMAP,
+        [SCANS.CONNECTED]: RETRY_COUNT.CONNECTED
+    });
+}
+
+function startCircuit(hasTarget, type) {
     if (hasTarget) {
         currentOutput = rpio.HIGH;
-        currentRetryCount = RETRY_COUNT;
-    } else if (!isRouterLog) {
-        if (currentRetryCount > 0) {
-            currentRetryCount--;
+        resetRetryCounts();
+    } else if (type !== SCANS.ROUTER_LOG) {
+        if (currentRetryCount[type] > 0) {
+            currentRetryCount[type]--;
         } else {
             currentOutput = rpio.LOW;
         }
@@ -62,7 +77,7 @@ function (report) {
         console.log('Report:', network.diffReports(prevReport, report));
     }
     prevReport = report;
-    startCircuit(hasTarget, false);
+    startCircuit(hasTarget, SCANS.NMAP);
 }, onError);
 
 // Router Log Scanner
@@ -71,7 +86,7 @@ function (report) {
 //         return log.address === TARGET;
 //     });
 //     console.log("Logs:", logs, hasTarget);
-//     startCircuit(hasTarget, true);
+//     startCircuit(hasTarget, SCANS.ROUTER_LOG);
 // }, onError);
 
 // Connected Clients Scanner
@@ -80,7 +95,7 @@ routerFetch.fetchConnectedClientsTimer(SCAN_DELAYS.CONNECTED, (clients) => {
         return client === TARGET_CONNECTED;
     });
     console.log("Clients:", clients, hasTarget);
-    startCircuit(hasTarget, false);
+    startCircuit(hasTarget, SCANS.CONNECTED);
 }, onError);
 
 // Cleanup when stopping scans

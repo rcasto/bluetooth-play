@@ -60,6 +60,15 @@ function extractConnectedClients(response) {
     })();
 }
 
+function extractNumConnectedClients(response) {
+    var responseText = cheerio.load(response)('script').eq(0).text();
+    // Create IIFE to not pollute global scope
+    return (() => {
+        var hostParams = eval(`(() => { ${responseText} return wlanHostPara; })()`);
+        return (hostParams && hostParams.length && hostParams[0]) || 0;
+    })();
+}
+
 function findAnySystemLog(targets, systemLogs) {
     systemLogs = systemLogs || [];
     targets = targets || [];
@@ -110,18 +119,34 @@ function fetchUrlResponse(options) {
 }
 
 function fetchConnectedClients() {
-    return loginAndGetSecret()
-        .then((secret) => {
-            return fetchUrlResponse({
-                host: host,
-                path: `/${secret}${connectedClientsPath}?Page=1&vapIdx=`,
-                headers: {
-                    'Cookie': authCookie,
-                    'Referer': `http://${host}/${secret}${connectedClientsPath}`
-                }
-            });
-        })
-        .then(extractConnectedClients);
+    return new Promise((resolve, reject) => {
+        var connectedClients = [];
+        var numConnectedClients;
+        (function _fetchConnectedClients(page) {
+            loginAndGetSecret()
+                .then((secret) => {
+                    return fetchUrlResponse({
+                        host: host,
+                        path: `/${secret}${connectedClientsPath}?Page=${page}&vapIdx=`,
+                        headers: {
+                            'Cookie': authCookie,
+                            'Referer': `http://${host}/${secret}${connectedClientsPath}`
+                        }
+                    });
+                })
+                .then((response) => {
+                    if (!numConnectedClients) {
+                        numConnectedClients = extractNumConnectedClients(response);
+                    }
+                    Array.prototype.push.apply(connectedClients, extractConnectedClients(response));
+                    if (connectedClients.length >= numConnectedClients) {
+                        return resolve(connectedClients);
+                    }
+                    return _fetchConnectedClients(page + 1);
+                })
+                .catch(reject);
+        })(1);
+    });
 }
 
 function fetchSystemLogs() {
