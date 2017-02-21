@@ -7,7 +7,7 @@
     "prestart": "babel src --presets es2015 --out-dir dist --copy-files",
     "start": "node dist/network/network-scan.js",
     "nopi": "node dist/network/network-scan.js -nopi",
-    "nopidebug": "node --inspect dist/network/network-scan.js -nopi",
+    "nopidebug": "node --inspect --debug-brk dist/network/network-scan.js -nopi",
     "clean": "rm -rf dist node_modules"
   },
   "author": "Richie Casto",
