@@ -11,7 +11,7 @@ var host = '192.168.0.1';
 var loginPath = '/userRpm/LoginRpm.htm?Save=Save';
 var systemLogPath = '/userRpm/SystemLogRpm.htm';
 var menuPath = '/userRpm/MenuRpm.htm';
-var connectedClientsPath = '/userRpm/WlanStationRpm.htm?Page=1&vapIdx=';
+var connectedClientsPath = '/userRpm/WlanStationRpm.htm';
 
 // Create authorization cookie
 var password = encrypt.hex_md5(config.password);
@@ -117,10 +117,10 @@ function fetchConnectedClients() {
         .then((secret) => {
             return fetchUrlResponse({
                 host: host,
-                path: `/${secret}${connectedClientsPath}`,
+                path: `/${secret}${connectedClientsPath}?Page=1&vapIdx=`,
                 headers: {
                     'Cookie': authCookie,
-                    'Referer': `http://${host}/${secret}${menuPath}`
+                    'Referer': `http://${host}/${secret}${connectedClientsPath}`
                 }
             });
         })
