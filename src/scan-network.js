@@ -8,13 +8,13 @@ var TARGET = 'FC:DB:B3:42:4C:18';
 var TARGET_CONNECTED = TARGET.replace(/:/g, '-');
 var PIN_OUT = 11;
 var RETRY_COUNT = {
-    NMAP: 3,
+    NMAP: 2,
     CONNECTED: 1
 };
 var SCAN_DELAYS = {
     ROUTER_LOG: 20000,
-    NMAP: 20000,
-    CONNECTED: 10000
+    NMAP: 15000,
+    CONNECTED: 5000
 };
 var SCANS = {
     ROUTER_LOG: 'routerlog',
