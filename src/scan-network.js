@@ -5,6 +5,7 @@ var network = require('./network');
 var routerFetch = require('./router-log/router-log-fetch');
 
 var TARGET = 'FC:DB:B3:42:4C:18';
+var TARGET_CONNECTED = TARGET.replace(':', '-');
 var PIN_OUT = 11;
 var RETRY_COUNT = 3;
 var SCAN_DELAY = 15000;
@@ -61,18 +62,18 @@ function (report) {
 }, onError);
 
 // Router Log Scanner
-routerFetch.fetchSystemLogUpdatesTimer(SCAN_DELAY, (logs) => {
-    var hasTarget = logs.some((log) => {
-        return log.address === TARGET;
-    });
-    console.log("Logs:", logs, hasTarget);
-    startCircuit(hasTarget, true);
-}, onError);
+// routerFetch.fetchSystemLogUpdatesTimer(SCAN_DELAY, (logs) => {
+//     var hasTarget = logs.some((log) => {
+//         return log.address === TARGET;
+//     });
+//     console.log("Logs:", logs, hasTarget);
+//     startCircuit(hasTarget, true);
+// }, onError);
 
 // Connected Clients Scanner
 routerFetch.fetchConnectedClientsTimer(SCAN_DELAY, (clients) => {
     var hasTarget = clients.some((client) => {
-        return client === TARGET;
+        return client === TARGET_CONNECTED;
     });
     console.log("Clients:", clients, hasTarget);
     startCircuit(hasTarget, false);
