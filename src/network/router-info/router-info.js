@@ -120,11 +120,6 @@ function fetchConnectedClientsTimer(timerDelay, onResults, onError) {
     return () => clearTimeout(timeoutid);
 }
 
-// Testing
-// fetchConnectedClientsTimer(10000, (response) => {
-//     console.log('Response:', response);
-// }, (error) => console.error(error));
-
 module.exports = {
     fetchConnectedClients,
     fetchConnectedClientsTimer
