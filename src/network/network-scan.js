@@ -1,6 +1,6 @@
 require('babel-polyfill');
 
-var isRaspberryPi = !process.argv.some((arg) => arg.toLowerCase() === '-nopi');
+var isRaspberryPi = !process.argv.some((arg) => arg.toLowerCase() === 'nopi');
 
 var rpio;
 if (isRaspberryPi) {
