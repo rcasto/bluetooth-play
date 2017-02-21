@@ -7,8 +7,12 @@ var routerFetch = require('./router-log/router-log-fetch');
 var TARGET = 'FC:DB:B3:42:4C:18';
 var TARGET_CONNECTED = TARGET.replace(/:/g, '-');
 var PIN_OUT = 11;
-var RETRY_COUNT = 3;
-var SCAN_DELAY = 15000;
+var RETRY_COUNT = 2;
+var SCAN_DELAYS = {
+    ROUTER_LOG: 20000,
+    NMAP: 20000,
+    CONNECTED: 10000
+};
 
 var currentOutput = rpio.LOW;
 var currentRetryCount = 0;
@@ -49,7 +53,7 @@ network.scanTimer({
     ],
     timeout: 60
 }, 
-SCAN_DELAY, 
+SCAN_DELAYS.NMAP, 
 function (report) {
     var hasTarget = network.getAddresses(report).some((address) => {
         return address.address === TARGET;
@@ -62,7 +66,7 @@ function (report) {
 }, onError);
 
 // Router Log Scanner
-// routerFetch.fetchSystemLogUpdatesTimer(SCAN_DELAY, (logs) => {
+// routerFetch.fetchSystemLogUpdatesTimer(SCAN_DELAYS.ROUTER_LOG, (logs) => {
 //     var hasTarget = logs.some((log) => {
 //         return log.address === TARGET;
 //     });
@@ -71,7 +75,7 @@ function (report) {
 // }, onError);
 
 // Connected Clients Scanner
-routerFetch.fetchConnectedClientsTimer(SCAN_DELAY, (clients) => {
+routerFetch.fetchConnectedClientsTimer(SCAN_DELAYS.CONNECTED, (clients) => {
     var hasTarget = clients.some((client) => {
         return client === TARGET_CONNECTED;
     });
