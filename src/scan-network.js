@@ -100,5 +100,6 @@ routerFetch.fetchConnectedClientsTimer(SCAN_DELAYS.CONNECTED, (clients) => {
 
 // Cleanup when stopping scans
 process.on('exit', function () {
+    rpio.write(PIN_OUT, rpio.LOW);
     rpio.close(PIN_OUT);
 });
