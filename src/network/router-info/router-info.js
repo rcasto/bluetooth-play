@@ -22,33 +22,27 @@ function extractSecretFromResponse(response) {
 }
 
 function extractConnectedClients(response) {
-    var responseText = cheerio.load(response)('script').eq(1).text();
-    // Create IIFE to not pollute global scope
-    return (() => {
-        try {
-            var hostList = eval(`(() => { ${responseText} return hostList; })()`);
-            return (hostList && hostList.filter((host) => {
-                return typeof host === 'string';
-            })) || [];
-        } catch(error) {
-            console.error('Extraction error:', error);
-            return [];
-        }
-    })();
+    try {
+        var responseText = cheerio.load(response)('script').eq(1).text();
+        var hostList = eval(`(() => { ${responseText} return hostList; })()`);
+        return (hostList && hostList.filter((host) => {
+            return typeof host === 'string';
+        })) || [];
+    } catch(error) {
+        console.error('Extraction error:', error);
+        return [];
+    }
 }
 
 function extractNumConnectedClients(response) {
-    var responseText = cheerio.load(response)('script').eq(0).text();
-    // Create IIFE to not pollute global scope
-    return (() => {
-        try {
-            var hostParams = eval(`(() => { ${responseText} return wlanHostPara; })()`);
-            return (hostParams && hostParams.length && hostParams[0]) || 0;
-        } catch (error) {
-            console.error('Extraction error:', error);
-            return 0;
-        }
-    })();
+    try {
+        var responseText = cheerio.load(response)('script').eq(0).text();
+        var hostParams = eval(`(() => { ${responseText} return wlanHostPara; })()`);
+        return (hostParams && hostParams.length && hostParams[0]) || 0;
+    } catch (error) {
+        console.error('Extraction error:', error);
+        return 0;
+    }
 }
 
 function loginAndGetSecret() {
