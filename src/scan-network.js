@@ -5,7 +5,7 @@ var network = require('./network');
 var routerFetch = require('./router-log/router-log-fetch');
 
 var TARGET = 'FC:DB:B3:42:4C:18';
-var TARGET_CONNECTED = TARGET.replace(':', '-');
+var TARGET_CONNECTED = TARGET.replace(/:/g, '-');
 var PIN_OUT = 11;
 var RETRY_COUNT = 3;
 var SCAN_DELAY = 15000;
