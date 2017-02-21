@@ -9,7 +9,7 @@ var TARGET_CONNECTED = TARGET.replace(/:/g, '-');
 var PIN_OUT = 11;
 var RETRY_COUNT = {
     NMAP: 3,
-    CONNECTED: 5
+    CONNECTED: 1
 };
 var SCAN_DELAYS = {
     ROUTER_LOG: 20000,
