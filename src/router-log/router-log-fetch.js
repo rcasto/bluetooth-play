@@ -53,10 +53,8 @@ function extractConnectedClients(response) {
     var responseText = cheerio.load(response)('script').eq(1).text();
     // Create IIFE to not pollute global scope
     return (() => {
-        console.log('Test before:', responseText);
-        var test = eval(`(() => { ${responseText} return hostList; })()`);
-        console.log('Test after:', test);
-        return (typeof hostList !== "undefined" && hostList && hostList.filter((host) => {
+        var hostList = eval(`(() => { ${responseText} return hostList; })()`);
+        return (hostList && hostList.filter((host) => {
             return typeof host === 'string';
         })) || [];
     })();
