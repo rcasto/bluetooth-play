@@ -55,7 +55,7 @@ function extractConnectedClients(response) {
     return (() => {
         console.log('Test before:', responseText);
         eval(responseText);
-        console.log('Test after:', hostList);
+        // console.log('Test after:', hostList);
         return (typeof hostList !== "undefined" && hostList && hostList.filter((host) => {
             return typeof host === 'string';
         })) || [];
