@@ -53,10 +53,15 @@ function extractConnectedClients(response) {
     var responseText = cheerio.load(response)('script').eq(1).text();
     // Create IIFE to not pollute global scope
     return (() => {
-        var hostList = eval(`(() => { ${responseText} return hostList; })()`);
-        return (hostList && hostList.filter((host) => {
-            return typeof host === 'string';
-        })) || [];
+        try {
+            var hostList = eval(`(() => { ${responseText} return hostList; })()`);
+            return (hostList && hostList.filter((host) => {
+                return typeof host === 'string';
+            })) || [];
+        } catch(error) {
+            console.error('Extraction error:', error);
+            return [];
+        }
     })();
 }
 
@@ -64,8 +69,13 @@ function extractNumConnectedClients(response) {
     var responseText = cheerio.load(response)('script').eq(0).text();
     // Create IIFE to not pollute global scope
     return (() => {
-        var hostParams = eval(`(() => { ${responseText} return wlanHostPara; })()`);
-        return (hostParams && hostParams.length && hostParams[0]) || 0;
+        try {
+            var hostParams = eval(`(() => { ${responseText} return wlanHostPara; })()`);
+            return (hostParams && hostParams.length && hostParams[0]) || 0;
+        } catch (error) {
+            console.error('Extraction error:', error);
+            return 0;
+        }
     })();
 }
 
