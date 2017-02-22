@@ -96,7 +96,7 @@ function fetchConnectedClients() {
                             'Cookie': authCookie,
                             'Referer': `http://${host}/${secret}${connectedClientsPath}`
                         }
-                    });//, 1);
+                    }, 1);
                 })
                 .then((response) => {
                     if (!numConnectedClients) {
