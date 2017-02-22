@@ -68,7 +68,7 @@ function fetch(options, numChunks) {
             res.on('data', (chunk) => {
                 response += chunk;
                 numProcessedChunks++;
-                dataUsage += chunk.byteLength;
+                dataUsage += chunk.byteLength || Buffer.byteLength(chunk);
                 if (numChunks && numProcessedChunks >= numChunks) {
                     res.destroy();
                     resolve(response);
