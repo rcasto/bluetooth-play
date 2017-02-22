@@ -4,6 +4,9 @@ var cheerio = require('cheerio');
 var encrypt = require('./encrypt');
 var config = require('./config.json');
 
+// Data usage metrics
+var dataUsage = 0; // bytes
+
 // TP-Link Model No. TL-WR841N
 var host = '192.168.0.1';
 var loginPath = '/userRpm/LoginRpm.htm?Save=Save';
@@ -46,7 +49,7 @@ function extractNumConnectedClients(response) {
 }
 
 function loginAndGetSecret() {
-    return fetchUrlResponse({
+    return fetch({
         host: host,
         path: loginPath,
         headers: {
@@ -56,13 +59,20 @@ function loginAndGetSecret() {
     .then(extractSecretFromResponse); 
 }
 
-function fetchUrlResponse(options) {
+function fetch(options, numChunks) {
     return new Promise((resolve, reject) => {
         http.get(options, (res) => {
             var response = '';
+            var numProcessedChunks = 0;
             res.setEncoding('utf8');
             res.on('data', (chunk) => {
                 response += chunk;
+                numProcessedChunks++;
+                dataUsage += chunk.byteLength;
+                if (numChunks && numProcessedChunks >= numChunks) {
+                    res.destroy();
+                    resolve(response);
+                }
             });
             res.on('error', reject);
             res.on('end', () => resolve(response));
@@ -77,14 +87,16 @@ function fetchConnectedClients() {
         (function _fetchConnectedClients(page) {
             loginAndGetSecret()
                 .then((secret) => {
-                    return fetchUrlResponse({
+                    // Only need the first chunk of data
+                    // to get what is needed
+                    return fetch({
                         host: host,
                         path: `/${secret}${connectedClientsPath}?Page=${page}&vapIdx=`,
                         headers: {
                             'Cookie': authCookie,
                             'Referer': `http://${host}/${secret}${connectedClientsPath}`
                         }
-                    });
+                    }, 1);
                 })
                 .then((response) => {
                     if (!numConnectedClients) {
@@ -114,7 +126,12 @@ function fetchConnectedClientsTimer(timerDelay, onResults, onError) {
     return () => clearTimeout(timeoutid);
 }
 
+function getDataUsageInBytes() {
+    return dataUsage;
+}
+
 module.exports = {
     fetchConnectedClients,
-    fetchConnectedClientsTimer
+    fetchConnectedClientsTimer,
+    getDataUsageInBytes
 };

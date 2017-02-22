@@ -15,7 +15,7 @@ if (isRaspberryPi) {
 }
 
 var network = require('./network-lib');
-var routerFetch = require('./router-info/router-info');
+var routerInfo = require('./router-info/router-info');
 
 var TARGET = 'FC:DB:B3:42:4C:18';
 var TARGET_CONNECTED = TARGET.replace(/:/g, '-');
@@ -95,11 +95,12 @@ function (report) {
 }, onError);
 
 // Connected Clients Scanner
-routerFetch.fetchConnectedClientsTimer(SCAN_DELAYS.CONNECTED, (clients) => {
+routerInfo.fetchConnectedClientsTimer(SCAN_DELAYS.CONNECTED, (clients) => {
     var hasTarget = clients.some((client) => {
         return client === TARGET_CONNECTED;
     });
-    console.log("Connected Clients:", clients, hasTarget);
+    console.log('Connected Clients:', clients, hasTarget);
+    console.log('Memory consumption:', routerInfo.getDataUsageInBytes(), 'bytes');
     startCircuit(hasTarget, SCANS.CONNECTED);
 }, onError);
 
