@@ -26,7 +26,7 @@ var RETRY_COUNT = {
 };
 var SCAN_DELAYS = {
     NMAP: 15000,
-    CONNECTED: 5000
+    CONNECTED: 30000
 };
 var SCANS = {
     NMAP: 'nmap',
