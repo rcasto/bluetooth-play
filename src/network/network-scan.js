@@ -22,10 +22,10 @@ var TARGET_CONNECTED = TARGET.replace(/:/g, '-');
 var PIN_OUT = 11;
 var RETRY_COUNT = {
     NMAP: 2,
-    CONNECTED: 1
+    CONNECTED: 0
 };
 var SCAN_DELAYS = {
-    NMAP: 15000,
+    NMAP: 20000,
     CONNECTED: 30000
 };
 var SCANS = {
